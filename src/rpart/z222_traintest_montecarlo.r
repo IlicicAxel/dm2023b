@@ -6,8 +6,8 @@ require("rpart")
 require("parallel")
 
 PARAM <- list()
-# reemplazar por las propias semillas
-PARAM$semillas <- c(102191, 200177, 410551, 552581, 892237)
+# add 20 semillas with prime numbers
+PARAM$semillas <- c(700027, 700057, 700067, 700087, 700127, 700129, 700171, 700199, 700201, 700223, 700241, 700277, 700279, 700303, 700307, 700319, 700331, 700339, 700361, 700363)
 
 #------------------------------------------------------------------------------
 # particionar agrega una columna llamada fold a un dataset que consiste
@@ -78,7 +78,7 @@ ArbolEstimarGanancia <- function(semilla, param_basicos) {
 #------------------------------------------------------------------------------
 
 # Aqui se debe poner la carpeta de la computadora local
-setwd("X:\\gdrive\\ITBA2023B\\") # Establezco el Working Directory
+setwd("/Users/ailicic/Documents/itba_dm") # Establezco el Working Directory
 # cargo los datos
 
 # cargo los datos
