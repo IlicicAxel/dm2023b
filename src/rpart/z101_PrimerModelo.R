@@ -7,7 +7,7 @@ require("rpart")
 require("rpart.plot")
 
 # Aqui se debe poner la carpeta de la materia de SU computadora local
-setwd("X:\\gdrive\\ITBA2023B\\") # Establezco el Working Directory
+setwd("/Users/ailicic/Documents/itba_dm") # Establezco el Working Directory
 
 # cargo el dataset
 dataset <- fread("./datasets/dataset_pequeno.csv")
@@ -21,18 +21,18 @@ modelo <- rpart(
         formula = "clase_ternaria ~ .",
         data = dtrain, # los datos donde voy a entrenar
         xval = 0,
-        cp = -0.3, # esto significa no limitar la complejidad de los splits
-        minsplit = 0, # minima cantidad de registros para que se haga el split
-        minbucket = 1, # tamaño minimo de una hoja
-        maxdepth = 3
+        cp = -0.5, # esto significa no limitar la complejidad de los splits
+        minsplit = 1000, # minima cantidad de registros para que se haga el split
+        minbucket = 2, # tamaño minimo de una hoja
+        maxdepth = 8
 ) # profundidad maxima del arbol
 
 
-# grafico el arbol
-prp(modelo,
-        extra = 101, digits = -5,
-        branch = 1, type = 4, varlen = 0, faclen = 0
-)
+# # grafico el arbol
+# prp(modelo,
+#         extra = 101, digits = -5,
+#         branch = 1, type = 4, varlen = 0, faclen = 0
+# )
 
 
 # aplico el modelo a los datos nuevos
