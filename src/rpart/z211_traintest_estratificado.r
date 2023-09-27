@@ -5,7 +5,7 @@ require("data.table")
 require("rpart")
 
 PARAM <- list()
-PARAM$semilla <- 123433 # cambiar por su semilla
+PARAM$semilla <- 700027 # cambiar por su semilla
 
 #------------------------------------------------------------------------------
 # particionar agrega una columna llamada fold a un dataset
