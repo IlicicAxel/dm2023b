@@ -15,7 +15,7 @@ PARAM = {
     "exp_input": "CA6110",
     "variables_intrames": True,
     "metodo": "deflacion",
-    "home": "~/buckets/b1/"
+    "home": '/home/ailicicisely/buckets/b1/'
 }
 
 OUTPUT = {}

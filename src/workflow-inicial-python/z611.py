@@ -10,7 +10,9 @@ PARAM['dataset'] = './datasets/competencia_2023.csv.gz'
 # valores posibles
 #  "MachineLearning"  "EstadisticaClasica" "Ninguno"
 PARAM['metodo'] = 'EstadisticaClasica'
-PARAM['home'] = '~/buckets/b1/'
+#Set PARAM['home'] in bucket/b1 in the root of the project
+
+PARAM['home'] = '/home/ailicicisely/buckets/b1/'
 
 # FIN Parametros del script
 
@@ -189,12 +191,13 @@ def Corregir_MachineLearning(dataset):
 
 # Aqui empieza el programa
 OUTPUT['PARAM'] = PARAM
+OUTPUT['time'] = {}
 OUTPUT['time']['start'] = pd.Timestamp.now().strftime('%Y%m%d %H%M%S')
 
 os.chdir(PARAM['home'])
 
 # cargo el dataset
-dataset = pd.read_csv(PARAM['dataset'], compression='gzip')
+dataset = pd.read_csv(PARAM['dataset'], compression='gzip', low_memory=False)
 
 # tmobile_app se daño a partir de 202010
 dataset.drop(columns=['tmobile_app'], inplace=True)
