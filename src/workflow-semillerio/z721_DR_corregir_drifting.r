@@ -121,7 +121,235 @@ AgregarVariables_IntraMes  <- function( dataset )
   dataset[ , vmr_mpagominimo         := vm_mpagominimo  / vm_mlimitecompra ]
 
   #Aqui debe usted agregar sus propias nuevas variables
+## Ganancias banco
+  dataset[, mmargen := rowSums(.SD, na.rm = TRUE), .SDcols = c("mactivos_margen", "mpasivos_margen")]
+  dataset[, mmargen_x_producto := mmargen / cproductos]
 
+  ## Total Pasivos
+  dataset[, total_deuda := rowSums(.SD, na.rm = TRUE), .SDcols = c("mprestamos_personales", "mprestamos_prendarios", "mprestamos_hipotecarios", "Visa_msaldototal", "Master_msaldototal")]
+
+  ## Total Activos
+  dataset[, total_activos := rowSums(.SD, na.rm = TRUE), .SDcols = c("mplazo_fijo_dolares", "mplazo_fijo_pesos", "minversion1_pesos", "minversion1_dolares", "minversion2", "mcuentas_saldo")]
+
+  ## Balance en el banco
+  dataset[, balance := total_activos - total_deuda]
+  dataset[, ratio_deuda := total_deuda / (total_activos + 1)]
+
+  ## saldos
+  dataset[, has_cuentacorriente_saldo_pos := ifelse(mcuenta_corriente > 0, 1, 0) ]
+  dataset[, has_cajaahorro_saldo_pos := ifelse(mcaja_ahorro > 0, 1, 0) ]
+  dataset[, has_saldo_pos := ifelse(mcaja_ahorro + mcuenta_corriente > 0, 1, 0) ]
+
+  ## Tiene movimientos/tarjetas
+  dataset[, has_debito_transacciones := ifelse(dataset$ctarjeta_debito_transacciones > 0, 1, 0) ]
+  dataset[, has_visa := ifelse(dataset$ctarjeta_visa > 0, 1, 0) ]
+  dataset[, has_visa_transacciones := ifelse(dataset$ctarjeta_visa_transacciones > 0, 1, 0) ]
+  dataset[, has_master := ifelse(dataset$ctarjeta_master > 0, 1, 0) ]
+  dataset[, has_master_transacciones := ifelse(dataset$ctarjeta_master_transacciones > 0, 1, 0) ]
+
+  ## Cantidad de tarjetas total
+  dataset[, ctarjetas := rowSums(.SD, na.rm = TRUE), .SDcols = c("ctarjeta_visa", "ctarjeta_master")]
+
+  ## Total seguros
+  dataset[, cseguros := cseguro_vida + cseguro_auto + cseguro_vivienda + cseguro_accidentes_personales]
+
+  ## Recibo pago de sueldo?
+  dataset[, has_payroll := ifelse(dataset$cpayroll_trx + dataset$cpayroll2_trx  > 0, 1, 0) ]
+
+  ## Total payroll
+  dataset[, mpayroll_total := mpayroll + mpayroll2]
+
+  ## Tiene débitos automáticos?
+  dataset[, has_da := ifelse(dataset$ccuenta_debitos_automaticos + dataset$ctarjeta_visa_debitos_automaticos + dataset$ctarjeta_master_debitos_automaticos  > 0, 1, 0) ]
+
+  ## cant pago mis cuentas?
+  dataset[, has_pmc := ifelse(dataset$cpagomiscuentas  > 0, 1, 0) ]
+
+  ## Total débitos automáticos
+  dataset[, debitos_automaticos := mcuenta_debitos_automaticos + mttarjeta_visa_debitos_automaticos + mttarjeta_master_debitos_automaticos]
+
+  ## Total Consumos y gastos
+  dataset[, total_consumos := rowSums(.SD, na.rm = TRUE), .SDcols = c("mautoservicio", "mtarjeta_visa_consumo", "mtarjeta_master_consumo", "mpagodeservicios", "debitos_automaticos")]
+
+  ## Total descuentos (sobre total de consumos?)
+  dataset[, total_descuentos := rowSums(.SD, na.rm = TRUE), .SDcols = c("mtarjeta_visa_descuentos", "mtarjeta_master_descuentos", "mcajeros_propios_descuentos")]
+
+  ## Descuentos sobre consumos
+  dataset[, total_descuentos_sobre_consumos := ifelse(dataset$total_consumos == 0, 0, total_descuentos / total_consumos)]
+
+  ## Total comisiones
+  dataset[, has_comisiones := ifelse(dataset$ccomisiones_mantenimiento + dataset$ccomisiones_otras > 0, 1, 0) ]
+  dataset[, total_comisiones := mcomisiones_mantenimiento + mcomisiones_otras]
+
+  ## Balance transferencias
+  dataset[, balance_transferencias := mtransferencias_recibidas - mtransferencias_emitidas]
+
+  ## ¿hace más transacciones en cajeros de otros bancos?
+  dataset[, cajeros_ajenos := ifelse(dataset$matm < dataset$matm_other, 1, 0)]
+
+  ## ctrx quarter / cantidad de productos?
+  dataset[, ctrx_x_producto := ctrx_quarter_normalizado / cproductos]
+
+  ## comisiones / ctrx_quarter?
+  dataset[, comisiones_x_trx := total_comisiones / (ctrx_quarter_normalizado + 1) ]
+
+  # fechas tarjetas: llevo a años:
+  dataset[, master_vencimiento := floor(dataset$Master_Fvencimiento/365)]
+  dataset[, master_alta := floor(dataset$Master_fechaalta/365)]
+  dataset[, visa_vencimiento := floor(dataset$Visa_Fvencimiento/365)]
+  dataset[, visa_alta := floor(dataset$Visa_fechaalta/365)]
+
+  ## limite de compra promedio
+  dataset[, promedio_limite_compra := ifelse(dataset$ctarjetas == 0, 0, vm_mlimitecompra / ctarjetas) ]
+
+  # pagado sobre saldo
+  dataset[, pagado_sobre_saldo := ifelse(dataset$vm_msaldototal == 0, 0, vm_mpagado / vm_msaldototal) ]
+
+  # consumo promedio
+  dataset[, promedio_consumo := ifelse(dataset$vm_cconsumos == 0, 0, vm_mconsumototal /  vm_cconsumos) ]
+
+  ## limite de compra sobre ingresos
+  dataset[, limite_compra_sobre_ingresos := ifelse(dataset$mpayroll_total == 0, NA, vm_mlimitecompra / mpayroll_total) ]
+  dataset[, limite_compra_sobre_activos := ifelse(dataset$total_activos == 0, NA, vm_mlimitecompra / total_activos) ]
+
+  ## limite de compra real vs esperado según ingreso
+  limite_esperado = median(dataset[mpayroll_total > 0, vm_mlimitecompra / mpayroll_total], na.rm=TRUE)
+  dataset[, limite_compra_real_sobre_esperado := ifelse(dataset$total_activos == 0, NA, mpayroll_total * limite_esperado - vm_mlimitecompra) ]
+
+
+  dataset[,"mmaster_consumo_transacciones_ratio"] = dataset[,"mtarjeta_master_consumo"] / dataset[,"ctarjeta_master_transacciones"]
+  dataset[,"cmaster_descuentos_transacciones_ratio"] = dataset[,"ctarjeta_master_descuentos"] / (dataset[,"ctarjeta_master_transacciones"] + dataset[,"ctarjeta_master_debitos_automaticos"])
+  dataset[,"mmaster_descuentos_transacciones_ratio"] = dataset[,"mtarjeta_master_descuentos"] / (dataset[,"mtarjeta_master_consumo"] + dataset[,"mttarjeta_master_debitos_automaticos"])
+  dataset[,"mmaster_consumo_limite_ratio"] = dataset[,"mtarjeta_master_consumo"] / dataset[,"Master_mlimitecompra"]
+  dataset[,"mmaster_consumo_limitef_ratio"] = dataset[,"mtarjeta_master_consumo"] / dataset[,"Master_mfinanciacion_limite"]
+
+  dataset[,"mmaster_inicio_mora_s"] = dataset[,Master_Finiciomora < 180]
+  dataset[,"mmaster_inicio_mora_a"] = dataset[,Master_Finiciomora < 360]
+  dataset[,"mmaster_falta_s"] = dataset[,Master_fechaalta < 180]
+  dataset[,"mmaster_falta_a"] = dataset[,Master_fechaalta < 360]
+  dataset[,"mmaster_fvencimiento_q"] = dataset[,(Master_Fvencimiento > -90)]
+
+  dataset[,"visa_vsaldo_limite"] = dataset[,"Visa_msaldototal"] / dataset[,"Visa_mlimitecompra"]
+  dataset[,"visa_payroll_limite"] = dataset[,"mpayroll"] / dataset[,"Visa_mlimitecompra"]
+  dataset[,"visa_saldo_limite"] = dataset[,"mcuentas_saldo"] / dataset[,"Visa_mlimitecompra"]
+
+  dataset[,"visa_pagominimo_vsaldo"] = dataset[,"Visa_mpagominimo"] / dataset[,"Visa_msaldototal"]
+  dataset[,"visa_pagominimo_limite"] = dataset[,"Visa_mpagominimo"] / dataset[,"Visa_mlimitecompra"]
+
+  dataset[,"visa_adelanto_saldo"] = dataset[,"Visa_madelantopesos"] / dataset[,"Visa_msaldototal"]
+  dataset[,"visa_adelanto_payroll"] = dataset[,"Visa_madelantopesos"] / dataset[,"mpayroll"]
+
+  dataset[,"visa_payroll_saldo"] = dataset[,"mpayroll"] / dataset[,"Visa_msaldototal"]
+
+  dataset[,"master_vsaldo_limite"] = dataset[,"Master_msaldototal"] / dataset[,"Master_mlimitecompra"]
+  dataset[,"master_payroll_limite"] = dataset[,"mpayroll"] / dataset[,"Master_mlimitecompra"]
+  dataset[,"master_saldo_limite"] = dataset[,"mcuentas_saldo"] / dataset[,"Master_mlimitecompra"]
+
+  dataset[,"master_pagominimo_vsaldo"] = dataset[,"Master_mpagominimo"] / dataset[,"Master_msaldototal"]
+  dataset[,"master_pagominimo_limite"] = dataset[,"Master_mpagominimo"] / dataset[,"Master_mlimitecompra"]
+
+  dataset[,"master_adelanto_saldo"] = dataset[,"Master_madelantopesos"] / dataset[,"Master_msaldototal"]
+  dataset[,"master_adelanto_payroll"] = dataset[,"Master_madelantopesos"] / dataset[,"mpayroll"]
+
+  dataset[,"master_payroll_saldo"] = dataset[,"mpayroll"] / dataset[,"Master_msaldototal"]
+
+
+  dataset[, "tenure_over_age"] = (dataset[, "cliente_antiguedad"] / 12) / dataset[, "cliente_edad"]
+
+
+  dataset[, "master_vencimiento"] = dataset[, "Master_Fvencimiento"] / 365
+
+  dataset[, "visa_vencimiento"] = dataset[, "Visa_Fvencimiento"] / 365
+
+  dataset[, "master_alta"] = dataset[, "Master_fechaalta"] / 365
+
+  dataset[, "visa_alta"] = dataset[, "Visa_fechaalta"] / 365
+
+  # Variables by cliente_edad and cliente_antiguedad
+  dataset[, "mpayroll_sobre_edad"] = dataset[, "mpayroll"] / dataset[, "cliente_edad"]
+  dataset[, "mpayroll_sobre_antiguedad"] = dataset[, "mpayroll"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "mpayroll2_sobre_edad"] = dataset[, "mpayroll2"] / dataset[, "cliente_edad"]
+  dataset[, "mpayroll2_sobre_antiguedad"] = dataset[, "mpayroll2"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_mfinanciacion_limite_sobre_edad"] = dataset[, "vm_mfinanciacion_limite"] / dataset[, "cliente_edad"]
+  dataset[, "vm_mfinanciacion_limite_sobre_antiguedad"] = dataset[, "vm_mfinanciacion_limite"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_msaldototal_sobre_edad"] = dataset[, "vm_msaldototal"] / dataset[, "cliente_edad"]
+  dataset[, "vm_msaldototal_sobre_antiguedad"] = dataset[, "vm_msaldototal"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_msaldopesos_sobre_edad"] = dataset[, "vm_msaldopesos"] / dataset[, "cliente_edad"]
+  dataset[, "vm_msaldopesos_sobre_antiguedad"] = dataset[, "vm_msaldopesos"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_msaldodolares_sobre_edad"] = dataset[, "vm_msaldodolares"] / dataset[, "cliente_edad"]
+  dataset[, "vm_msaldodolares_sobre_antiguedad"] = dataset[, "vm_msaldodolares"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_mconsumospesos_sobre_edad"] = dataset[, "vm_mconsumospesos"] / dataset[, "cliente_edad"]
+  dataset[, "vm_mconsumospesos_sobre_antiguedad"] = dataset[, "vm_mconsumospesos"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_mconsumosdolares_sobre_edad"] = dataset[, "vm_mconsumosdolares"] / dataset[, "cliente_edad"]
+  dataset[, "vm_mconsumosdolares_sobre_antiguedad"] = dataset[, "vm_mconsumosdolares"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_mlimitecompra_sobre_edad"] = dataset[, "vm_mlimitecompra"] / dataset[, "cliente_edad"]
+  dataset[, "vm_mlimitecompra_sobre_antiguedad"] = dataset[, "vm_mlimitecompra"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_madelantopesos_sobre_edad"] = dataset[, "vm_madelantopesos"] / dataset[, "cliente_edad"]
+  dataset[, "vm_madelantopesos_sobre_antiguedad"] = dataset[, "vm_madelantopesos"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_madelantodolares_sobre_edad"] = dataset[, "vm_madelantodolares"] / dataset[, "cliente_edad"]
+  dataset[, "vm_madelantodolares_sobre_antiguedad"] = dataset[, "vm_madelantodolares"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_mpagado_sobre_edad"] = dataset[, "vm_mpagado"] / dataset[, "cliente_edad"]
+  dataset[, "vm_mpagado_sobre_antiguedad"] = dataset[, "vm_mpagado"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_mpagospesos_sobre_edad"] = dataset[, "vm_mpagospesos"] / dataset[, "cliente_edad"]
+  dataset[, "vm_mpagospesos_sobre_antiguedad"] = dataset[, "vm_mpagospesos"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_mpagosdolares_sobre_edad"] = dataset[, "vm_mpagosdolares"] / dataset[, "cliente_edad"]
+  dataset[, "vm_mpagosdolares_sobre_antiguedad"] = dataset[, "vm_mpagosdolares"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_mconsumototal_sobre_edad"] = dataset[, "vm_mconsumototal"] / dataset[, "cliente_edad"]
+  dataset[, "vm_mconsumototal_sobre_antiguedad"] = dataset[, "vm_mconsumototal"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_cconsumos_sobre_edad"] = dataset[, "vm_cconsumos"] / dataset[, "cliente_edad"]
+  dataset[, "vm_cconsumos_sobre_antiguedad"] = dataset[, "vm_cconsumos"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_cadelantosefectivo_sobre_edad"] = dataset[, "vm_cadelantosefectivo"] / dataset[, "cliente_edad"]
+  dataset[, "vm_cadelantosefectivo_sobre_antiguedad"] = dataset[, "vm_cadelantosefectivo"] / dataset[, "cliente_antiguedad"]
+
+  dataset[, "vm_mpagominimo_sobre_edad"] = dataset[, "vm_mpagominimo"] / dataset[, "cliente_edad"]
+  dataset[, "vm_mpagominimo_sobre_antiguedad"] = dataset[, "vm_mpagominimo"] / dataset[, "cliente_antiguedad"]
+
+  #ctrx_quarter_edad
+  dataset[, "ctrx_quarter_edad"] = dataset[, "ctrx_quarter"] / dataset[, "cliente_edad"]
+  dataset[, "ctrx_quarter_antiguedad"] = dataset[, "ctrx_quarter"] / dataset[, "cliente_antiguedad"]
+
+  # C
+
+  dataset[, "ctrx_quarter_risk"] = ifelse(dataset[, "ctrx_quarter"] < 50, 1, 0)
+  dataset[, "ctrx_quarter_edad_risk"] = ifelse(dataset[, "ctrx_quarter_edad"] < 1, 1, 0)
+  dataset[, "ctrx_quarter_antiguedad_risk"] = ifelse(dataset[, "ctrx_quarter_antiguedad"] < 0.5, 1, 0)
+  dataset[, "mpayroll_risk"] = ifelse(dataset[, "mpayroll"] < 10000, 1, 0)
+  dataset[, "cpayroll_trx_risk"] = ifelse(dataset[, "cpayroll_trx"] == 0, 1, 0)
+  dataset[, "ctarjeta_visa_transacciones"] = ifelse(dataset[, "ctarjeta_visa_transacciones"] < 5, 1, 0)
+  dataset[, "ctarjeta_debito_transacciones"] = ifelse(dataset[, "ctarjeta_debito_transacciones"] < 2, 1, 0)
+  dataset[, "mcuentas_saldo_risk"] = ifelse(dataset[, "mcuentas_saldo"] == 0, 1, 0)
+  dataset[, "mcaja_ahorro_risk"] = ifelse(dataset[, "mcaja_ahorro"] < 10000, 1, 0)
+  dataset[, "mcuenta_corriente_risk"] = ifelse(dataset[, "mcuenta_corriente"] <= 0, 1, 0)
+  dataset[, "mpasivos_margen_risk"] = ifelse(dataset[, "mpasivos_margen"] <= 0, 1, 0)
+  dataset[, "vm_mfinanciacion_limite_risk"] = ifelse(dataset[, "vm_mfinanciacion_limite"] < 175000, 1, 0)
+  dataset[, "vm_Finiciomora_risk"] = ifelse(dataset[, "vm_Finiciomora"] > 25, 1, 0)
+  dataset[, "vm_msaldototal_risk"] = ifelse(dataset[, "vm_msaldototal"] < 12500, 1, 0)
+  dataset[, "total_consumos_risk"] = ifelse(dataset[, "total_consumos"] < 12500, 1, 0)
+  dataset[, "has_payroll_risk"] = ifelse(dataset[, "has_payroll"] == 0, 1, 0)
+  dataset[, "vm_mconsumospesos_risk"] = ifelse(dataset[, "vm_mconsumospesos"] < 5000, 1, 0)
+  dataset[, "vm_mlimitecompra_risk"] = ifelse(dataset[, "vm_mlimitecompra"] < 125000, 1, 0)
+  dataset[, "vm_fechaalta_risk"] = ifelse(dataset[, "vm_fechaalta"] < 2200, 1, 0)
+  dataset[, "vm_cconsumos_risk"] = ifelse(dataset[, "vm_cconsumos"] < 6, 1, 0)
+  dataset[, "vm_mpagominimo_risk"] = ifelse(dataset[, "vm_mpagominimo"] == 0, 1, 0)
+  #sum of all risks in variable total_risks
+  dataset[, "total_risks"] = dataset[, "ctrx_quarter_risk"] + dataset[, "ctrx_quarter_edad_risk"] + dataset[, "ctrx_quarter_antiguedad_risk"] + dataset[, "mpayroll_risk"] + dataset[, "cpayroll_trx_risk"] + dataset[, "ctarjeta_visa_transacciones"] + dataset[, "ctarjeta_debito_transacciones"] + dataset[, "mcuentas_saldo_risk"] + dataset[, "mcaja_ahorro_risk"] + dataset[, "mcuenta_corriente_risk"] + dataset[, "mpasivos_margen_risk"] + dataset[, "vm_mfinanciacion_limite_risk"] + dataset[, "vm_Finiciomora_risk"] + dataset[, "vm_msaldototal_risk"] + dataset[, "total_consumos_risk"] + dataset[, "has_payroll_risk"] + dataset[, "vm_mconsumospesos_risk"] + dataset[, "vm_mlimitecompra_risk"] + dataset[, "vm_fechaalta_risk"] + dataset[, "vm_cconsumos_risk"] + dataset[, "vm_mpagominimo_risk"]
+  
   #valvula de seguridad para evitar valores infinitos
   #paso los infinitos a NULOS
   infinitos      <- lapply(names(dataset),function(.name) dataset[ , sum(is.infinite(get(.name)))])

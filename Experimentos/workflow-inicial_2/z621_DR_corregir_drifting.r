@@ -367,18 +367,18 @@ AgregarVariables_IntraMes <- function(dataset) {
   dataset[, "mcaja_ahorro_risk"] = ifelse(dataset[, "mcaja_ahorro"] < 10000, 1, 0)
   dataset[, "mcuenta_corriente_risk"] = ifelse(dataset[, "mcuenta_corriente"] <= 0, 1, 0)
   dataset[, "mpasivos_margen_risk"] = ifelse(dataset[, "mpasivos_margen"] <= 0, 1, 0)
-  dataset[, "vm_financiacion_limite_risk"] = ifelse(dataset[, "vm_financiacion_limite"] < 175000, 1, 0)
+  dataset[, "vm_mfinanciacion_limite_risk"] = ifelse(dataset[, "vm_mfinanciacion_limite"] < 175000, 1, 0)
   dataset[, "vm_Finiciomora_risk"] = ifelse(dataset[, "vm_Finiciomora"] > 25, 1, 0)
   dataset[, "vm_msaldototal_risk"] = ifelse(dataset[, "vm_msaldototal"] < 12500, 1, 0)
-  dataset[, "total_consumo_risk"] = ifelse(dataset[, "total_consumo"] < 12500, 1, 0)
+  dataset[, "total_consumos_risk"] = ifelse(dataset[, "total_consumos"] < 12500, 1, 0)
   dataset[, "has_payroll_risk"] = ifelse(dataset[, "has_payroll"] == 0, 1, 0)
-  dataset[, "vm_consumopesos_risk"] = ifelse(dataset[, "vm_consumopesos"] < 5000, 1, 0)
-  dataset[, "vm_limitecompra_risk"] = ifelse(dataset[, "vm_limitecompra"] < 125000, 1, 0)
+  dataset[, "vm_mconsumospesos_risk"] = ifelse(dataset[, "vm_mconsumospesos"] < 5000, 1, 0)
+  dataset[, "vm_mlimitecompra_risk"] = ifelse(dataset[, "vm_mlimitecompra"] < 125000, 1, 0)
   dataset[, "vm_fechaalta_risk"] = ifelse(dataset[, "vm_fechaalta"] < 2200, 1, 0)
   dataset[, "vm_cconsumos_risk"] = ifelse(dataset[, "vm_cconsumos"] < 6, 1, 0)
-  dataset[, "vm_pagominimo_risk"] = ifelse(dataset[, "vm_pagominimo"] == 0, 1, 0)
+  dataset[, "vm_mpagominimo_risk"] = ifelse(dataset[, "vm_mpagominimo"] == 0, 1, 0)
   #sum of all risks in variable total_risks
-  dataset[, "total_risks"] = dataset[, "ctrx_quarter_risk"] + dataset[, "ctrx_quarter_edad_risk"] + dataset[, "ctrx_quarter_antiguedad_risk"] + dataset[, "mpayroll_risk"] + dataset[, "cpayroll_trx_risk"] + dataset[, "ctarjeta_visa_transacciones"] + dataset[, "ctarjeta_debito_transacciones"] + dataset[, "mcuentas_saldo_risk"] + dataset[, "mcaja_ahorro_risk"] + dataset[, "mcuenta_corriente_risk"] + dataset[, "Mpasivos_margen_risk"] + dataset[, "vm_financiacion_limite_risk"] + dataset[, "vm_Finiciomora_risk"] + dataset[, "vm_msaldototal_risk"] + dataset[, "total_consumo_risk"] + dataset[, "has_payroll_risk"] + dataset[, "vm_consumopesos_risk"] + dataset[, "vm_limitecompra_risk"] + dataset[, "vm_fechaalta_risk"] + dataset[, "vm_cconsumos_risk"] + dataset[, "vm_pagominimo_risk"]
+  dataset[, "total_risks"] = dataset[, "ctrx_quarter_risk"] + dataset[, "ctrx_quarter_edad_risk"] + dataset[, "ctrx_quarter_antiguedad_risk"] + dataset[, "mpayroll_risk"] + dataset[, "cpayroll_trx_risk"] + dataset[, "ctarjeta_visa_transacciones"] + dataset[, "ctarjeta_debito_transacciones"] + dataset[, "mcuentas_saldo_risk"] + dataset[, "mcaja_ahorro_risk"] + dataset[, "mcuenta_corriente_risk"] + dataset[, "mpasivos_margen_risk"] + dataset[, "vm_mfinanciacion_limite_risk"] + dataset[, "vm_Finiciomora_risk"] + dataset[, "vm_msaldototal_risk"] + dataset[, "total_consumos_risk"] + dataset[, "has_payroll_risk"] + dataset[, "vm_mconsumospesos_risk"] + dataset[, "vm_mlimitecompra_risk"] + dataset[, "vm_fechaalta_risk"] + dataset[, "vm_cconsumos_risk"] + dataset[, "vm_mpagominimo_risk"]
   
   # valvula de seguridad para evitar valores infinitos
   # paso los infinitos a NULOS
