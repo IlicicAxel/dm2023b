@@ -36,7 +36,7 @@ PARAM$Tendencias1$tendencia  <- FALSE
 PARAM$Tendencias1$minimo  <- FALSE
 PARAM$Tendencias1$maximo  <- FALSE
 PARAM$Tendencias1$promedio  <- TRUE
-PARAM$Tendencias1$ratioavg  <- TRUE
+PARAM$Tendencias1$ratioavg  <- FALSE
 PARAM$Tendencias1$ratiomax  <- FALSE
 
 PARAM$Tendencias2$run  <- TRUE
@@ -54,10 +54,10 @@ PARAM$RandomForest$num.trees  <- 20
 PARAM$RandomForest$max.depth  <-  4
 PARAM$RandomForest$min.node.size  <- 1000
 PARAM$RandomForest$mtry  <- 40
-PARAM$RandomForest$semilla  <- 102191    # cambiar por la propia semilla
+PARAM$RandomForest$semilla  <- 700027    # cambiar por la propia semilla
 
-PARAM$CanaritosAsesinos$ratio  <- 1.3       #varia de 0.0 a 2.0, si es 0.0 NO se activan
-PARAM$CanaritosAsesinos$desvios  <- 4.0      #desvios estandar de la media, para el cutoff
+PARAM$CanaritosAsesinos$ratio  <- 0.2       #varia de 0.0 a 2.0, si es 0.0 NO se activan
+PARAM$CanaritosAsesinos$desvios  <- 3.0      #desvios estandar de la media, para el cutoff
 PARAM$CanaritosAsesinos$semilla  <- 700027   # cambiar por la propia semilla
 
 PARAM$home  <- "~/buckets/b1/"
