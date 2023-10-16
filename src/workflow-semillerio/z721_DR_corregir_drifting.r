@@ -265,61 +265,6 @@ AgregarVariables_IntraMes  <- function( dataset )
 
   dataset[, "visa_alta"] = dataset[, "Visa_fechaalta"] / 365
 
-  # Variables by cliente_edad and cliente_antiguedad
-  dataset[, "mpayroll_sobre_edad"] = dataset[, "mpayroll"] / dataset[, "cliente_edad"]
-  dataset[, "mpayroll_sobre_antiguedad"] = dataset[, "mpayroll"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "mpayroll2_sobre_edad"] = dataset[, "mpayroll2"] / dataset[, "cliente_edad"]
-  dataset[, "mpayroll2_sobre_antiguedad"] = dataset[, "mpayroll2"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_mfinanciacion_limite_sobre_edad"] = dataset[, "vm_mfinanciacion_limite"] / dataset[, "cliente_edad"]
-  dataset[, "vm_mfinanciacion_limite_sobre_antiguedad"] = dataset[, "vm_mfinanciacion_limite"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_msaldototal_sobre_edad"] = dataset[, "vm_msaldototal"] / dataset[, "cliente_edad"]
-  dataset[, "vm_msaldototal_sobre_antiguedad"] = dataset[, "vm_msaldototal"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_msaldopesos_sobre_edad"] = dataset[, "vm_msaldopesos"] / dataset[, "cliente_edad"]
-  dataset[, "vm_msaldopesos_sobre_antiguedad"] = dataset[, "vm_msaldopesos"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_msaldodolares_sobre_edad"] = dataset[, "vm_msaldodolares"] / dataset[, "cliente_edad"]
-  dataset[, "vm_msaldodolares_sobre_antiguedad"] = dataset[, "vm_msaldodolares"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_mconsumospesos_sobre_edad"] = dataset[, "vm_mconsumospesos"] / dataset[, "cliente_edad"]
-  dataset[, "vm_mconsumospesos_sobre_antiguedad"] = dataset[, "vm_mconsumospesos"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_mconsumosdolares_sobre_edad"] = dataset[, "vm_mconsumosdolares"] / dataset[, "cliente_edad"]
-  dataset[, "vm_mconsumosdolares_sobre_antiguedad"] = dataset[, "vm_mconsumosdolares"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_mlimitecompra_sobre_edad"] = dataset[, "vm_mlimitecompra"] / dataset[, "cliente_edad"]
-  dataset[, "vm_mlimitecompra_sobre_antiguedad"] = dataset[, "vm_mlimitecompra"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_madelantopesos_sobre_edad"] = dataset[, "vm_madelantopesos"] / dataset[, "cliente_edad"]
-  dataset[, "vm_madelantopesos_sobre_antiguedad"] = dataset[, "vm_madelantopesos"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_madelantodolares_sobre_edad"] = dataset[, "vm_madelantodolares"] / dataset[, "cliente_edad"]
-  dataset[, "vm_madelantodolares_sobre_antiguedad"] = dataset[, "vm_madelantodolares"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_mpagado_sobre_edad"] = dataset[, "vm_mpagado"] / dataset[, "cliente_edad"]
-  dataset[, "vm_mpagado_sobre_antiguedad"] = dataset[, "vm_mpagado"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_mpagospesos_sobre_edad"] = dataset[, "vm_mpagospesos"] / dataset[, "cliente_edad"]
-  dataset[, "vm_mpagospesos_sobre_antiguedad"] = dataset[, "vm_mpagospesos"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_mpagosdolares_sobre_edad"] = dataset[, "vm_mpagosdolares"] / dataset[, "cliente_edad"]
-  dataset[, "vm_mpagosdolares_sobre_antiguedad"] = dataset[, "vm_mpagosdolares"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_mconsumototal_sobre_edad"] = dataset[, "vm_mconsumototal"] / dataset[, "cliente_edad"]
-  dataset[, "vm_mconsumototal_sobre_antiguedad"] = dataset[, "vm_mconsumototal"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_cconsumos_sobre_edad"] = dataset[, "vm_cconsumos"] / dataset[, "cliente_edad"]
-  dataset[, "vm_cconsumos_sobre_antiguedad"] = dataset[, "vm_cconsumos"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_cadelantosefectivo_sobre_edad"] = dataset[, "vm_cadelantosefectivo"] / dataset[, "cliente_edad"]
-  dataset[, "vm_cadelantosefectivo_sobre_antiguedad"] = dataset[, "vm_cadelantosefectivo"] / dataset[, "cliente_antiguedad"]
-
-  dataset[, "vm_mpagominimo_sobre_edad"] = dataset[, "vm_mpagominimo"] / dataset[, "cliente_edad"]
-  dataset[, "vm_mpagominimo_sobre_antiguedad"] = dataset[, "vm_mpagominimo"] / dataset[, "cliente_antiguedad"]
-
   #ctrx_quarter_edad
   dataset[, "ctrx_quarter_edad"] = dataset[, "ctrx_quarter"] / dataset[, "cliente_edad"]
   dataset[, "ctrx_quarter_antiguedad"] = dataset[, "ctrx_quarter"] / dataset[, "cliente_antiguedad"]
