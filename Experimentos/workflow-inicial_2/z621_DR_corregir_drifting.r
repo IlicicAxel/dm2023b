@@ -366,7 +366,7 @@ AgregarVariables_IntraMes <- function(dataset) {
   dataset[, "mcuentas_saldo_risk"] = ifelse(dataset[, "mcuentas_saldo"] == 0, 1, 0)
   dataset[, "mcaja_ahorro_risk"] = ifelse(dataset[, "mcaja_ahorro"] < 10000, 1, 0)
   dataset[, "mcuenta_corriente_risk"] = ifelse(dataset[, "mcuenta_corriente"] <= 0, 1, 0)
-  dataset[, "Mpasivos_margen_risk"] = ifelse(dataset[, "Mpasivos_margen"] <= 0, 1, 0)
+  dataset[, "mpasivos_margen_risk"] = ifelse(dataset[, "mpasivos_margen"] <= 0, 1, 0)
   dataset[, "vm_financiacion_limite_risk"] = ifelse(dataset[, "vm_financiacion_limite"] < 175000, 1, 0)
   dataset[, "vm_Finiciomora_risk"] = ifelse(dataset[, "vm_Finiciomora"] > 25, 1, 0)
   dataset[, "vm_msaldototal_risk"] = ifelse(dataset[, "vm_msaldototal"] < 12500, 1, 0)
